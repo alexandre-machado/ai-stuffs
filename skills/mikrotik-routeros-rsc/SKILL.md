@@ -1,6 +1,6 @@
 ---
 name: mikrotik-routeros-rsc
-description: Criação, edição e revisão de scripts RouterOS (.rsc) com foco em idempotência, segurança e boas práticas. Use quando for necessário gerar, ajustar ou importar arquivos .rsc para MikroTik: (1) criar novas configurações via script, (2) editar scripts existentes com correções seguras, (3) revisar riscos e políticas de execução, (4) validar com import dry-run e captura de erros.
+description: "Criação, edição e revisão de scripts RouterOS (.rsc) com foco em idempotência, segurança e boas práticas. Use quando for necessário gerar, ajustar ou importar arquivos .rsc para MikroTik: (1) criar novas configurações via script, (2) editar scripts existentes com correções seguras, (3) revisar riscos e políticas de execução, (4) validar com import dry-run e captura de erros."
 ---
 
 # Skill: RouterOS .rsc
