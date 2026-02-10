@@ -1,21 +1,21 @@
-# Regras do Linter (.rsc)
+# Linter Rules (.rsc)
 
-O linter aplica verificações estáticas básicas de segurança e idempotência.
+The linter applies basic static checks for security and idempotency.
 
-## Regras
-- Proibir comandos destrutivos: `system reset-configuration`, formatação, wipe.
-- Alertar `import` dentro de script (deve ser usado no terminal raiz).
-- Alertar políticas excessivas em `/system script add policy=...` (preferir mínimo necessário).
-- Alertar `add` sem guarda (`find where ...` + `:if`), para menus comuns (IP/Firewall/etc.).
-- Alertar `set`/`remove` referindo `numbers` (IDs fixos) ao invés de `find`.
-- Alertar uso de `:delay` em loops sem limites.
-- Alertar `:global` dentro de escopos locais sem re-referência externa.
-- Alertar `log` com termos como `password`, `secret`, `token`.
+## Rules
+- Forbid destructive commands: `system reset-configuration`, formatting, wipe.
+- Alert `import` inside script (should be used at root terminal).
+- Alert excessive policies in `/system script add policy=...` (prefer minimum necessary).
+- Alert `add` without guard (`find where ...` + `:if`), for common menus (IP/Firewall/etc.).
+- Alert `set`/`remove` referring to `numbers` (fixed IDs) instead of `find`.
+- Alert `:delay` in loops without limits.
+- Alert `:global` inside local scopes without external re-reference.
+- Alert `log` with terms like `password`, `secret`, `token`.
 
-## Limitações
-- Análise é por linha; não compreende todo fluxo nem estado do roteador.
-- Regras são heurísticas; exigem revisão humana.
+## Limitations
+- Analysis is per-line; does not comprehend entire flow or router state.
+- Rules are heuristics; require human review.
 
-## Uso
-- `python scripts/lint_rsc.py caminho/do/script.rsc`
-- Saída: avisos com número de linha e regra.
+## Usage
+- `python scripts/lint_rsc.py path/to/script.rsc`
+- Output: warnings with line number and rule.

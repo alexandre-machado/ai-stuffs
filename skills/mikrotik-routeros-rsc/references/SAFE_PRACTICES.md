@@ -1,31 +1,31 @@
-# Boas Práticas: Segurança e Idempotência
+# Best Practices: Security and Idempotency
 
-Fontes principais:
-- Manual Scripting (Jan 2026): https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting
+Primary sources:
+- Scripting Manual (Jan 2026): https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting
 - Scripting Tips & Tricks: https://help.mikrotik.com/docs/spaces/ROS/pages/283574370/Scripting+Tips+and+Tricks
 
-## Idempotência
-- Antes de `add`/`set`, verifique com `find where ...` e condicional `:if`.
-- Use `print as-value` e arrays para comparar estados.
-- Evite depender de `numbers`; selecione por `name`, `address`, `comment`, etc.
+## Idempotency
+- Before `add`/`set`, verify with `find where ...` and conditional `:if`.
+- Use `print as-value` and arrays to compare states.
+- Avoid depending on `numbers`; select by `name`, `address`, `comment`, etc.
 
-## Permissões
-- Scripts herdam permissões do usuário/scheduler a depender da execução.
-- `use-script-permissions` só funciona quando permissões do script são suficientes.
-- Não conceda políticas desnecessárias em `/system script add policy=...`.
+## Permissions
+- Scripts inherit permissions from user/scheduler depending on execution.
+- `use-script-permissions` only works when script permissions are sufficient.
+- Don't grant unnecessary policies in `/system script add policy=...`.
 
-## Robustez
-- `:onerror` para capturar falhas; combine com `:retry` para retentativas controladas.
-- Limite instâncias múltiplas com `:jobname`.
-- Evite `:delay` em loops sem limites; use `Scheduler` para tarefas periódicas.
+## Robustness
+- `:onerror` to capture failures; combine with `:retry` for controlled retries.
+- Limit multiple instances with `:jobname`.
+- Avoid `:delay` in loops without limits; use `Scheduler` for periodic tasks.
 
-## Segurança
-- Não automatizar comandos destrutivos (`system reset-configuration`, formatação, wipe).
-- Evitar exfiltração acidental (`/export hide-sensitive=no` em ambientes sensíveis).
-- Trate segredos com cuidado; não registrar senhas em `:log`.
-- Validar entradas antes de `fetch` e similares.
+## Security
+- Don't automate destructive commands (`system reset-configuration`, formatting, wipe).
+- Avoid accidental exfiltration (`/export hide-sensitive=no` in sensitive environments).
+- Handle secrets carefully; don't log passwords in `:log`.
+- Validate inputs before `fetch` and similar operations.
 
-## Estilo
-- Parametrizar com `:local` no topo; somar `:global` apenas quando necessário.
-- Comentários curtos e objetivos; sem blocos longos.
-- Usar `where` e expressões claras; alinhamento consistente.
+## Style
+- Parameterize with `:local` at top; add `:global` only when needed.
+- Short and objective comments; no large blocks.
+- Use `where` and clear expressions; consistent alignment.

@@ -1,50 +1,50 @@
-# RouterOS Scripting – Linguagem e Sintaxe
+# RouterOS Scripting – Language and Syntax
 
-Referência concisa baseada no manual oficial (atualizado Jan 2026):
+Concise reference based on the official manual (updated Jan 2026):
 https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting
 
-## Conceitos
-- Linha lógica termina em `;` ou `NEWLINE`; dentro de `()`, `[]`, `{}` não precisa `;`.
-- Comentário: começa com `#` até fim da linha; não há multi-linha.
-- Junção de linhas com `\` seguindo regras (não continua comentário/token exceto string).
-- Escopos: global (raiz) e local `{}`; evite `:global` dentro de escopos locais sem re-referência externa.
-- Palavras-chave: `and`, `or`, `in`. Delimitadores: `() [] {} : ; $ /`.
+## Concepts
+- Logical line ends with `;` or `NEWLINE`; inside `()`, `[]`, `{}` `;` is not needed.
+- Comment: starts with `#` until end of line; no multi-line comments.
+- Line joining with `\` following rules (does not continue comment/token except string).
+- Scopes: global (root) and local `{}`; avoid `:global` inside local scopes without external re-reference.
+- Keywords: `and`, `or`, `in`. Delimiters: `() [] {} : ; $ /`.
 
-## Tipos
+## Types
 - `num`, `bool`, `str`, `ip`, `ip-prefix`, `ip6`, `ip6-prefix`, `id`, `time`, `array`, `nil`.
-- Conversões: `:tonum`, `:tostr`, `:toarray`, `:toip`, `:toid`, `:totime`, etc.
+- Conversions: `:tonum`, `:tostr`, `:toarray`, `:toip`, `:toid`, `:totime`, etc.
 
-## Operadores
-- Aritméticos: `+ - * / %`. Use parênteses para evitar ambiguidade com IP.
-- Relacionais: `< > = <= >= !=`. Negação por `expr=false` ou `!` lógico.
-- Lógicos: `! && || and or in`.
-- Bitwise (IP/IPv6): `~ | ^ & << >>` (sem shift p/ IPv6).
-- Concatenação: `.` para strings, `,` para arrays. Interpolação com `$var`, `$()`, `$[]`.
-- Outros: `[]` substituição de comando, `()` agrupamento, `$` substituição, `~` regex POSIX.
+## Operators
+- Arithmetic: `+ - * / %`. Use parentheses to avoid ambiguity with IP.
+- Relational: `< > = <= >= !=`. Negation by `expr=false` or logical `!`.
+- Logical: `! && || and or in`.
+- Bitwise (IP/IPv6): `~ | ^ & << >>` (no shift for IPv6).
+- Concatenation: `.` for strings, `,` for arrays. Interpolation with `$var`, `$()`, `$[]`.
+- Others: `[]` command substitution, `()` grouping, `$` substitution, `~` POSIX regex.
 
-## Variáveis
-- `:global` e `:local` obrigam declaração antes do uso.
-- Evite nomes reservados (propriedades embutidas de menus). Preferir nomes customizados.
-- Case-sensitive; nomes inválidos devem ser entre aspas.
+## Variables
+- `:global` and `:local` require declaration before use.
+- Avoid reserved names (built-in menu properties). Prefer custom names.
+- Case-sensitive; invalid names must be in quotes.
 
-## Comandos globais úteis
-- `:onerror e in={ ... } do={ ... }` captura erros; `:retry` para retentativa.
-- `:jobname` para limitar execução a instância única.
-- `:serialize`/`:deserialize` para JSON/DSV; `file-name` para gerar arquivo.
-- `:time`, `:timestamp`, `:rndnum`, `:rndstr` utilitários.
+## Useful global commands
+- `:onerror e in={ ... } do={ ... }` captures errors; `:retry` for retry logic.
+- `:jobname` to limit execution to single instance.
+- `:serialize`/`:deserialize` for JSON/DSV; `file-name` to generate file.
+- `:time`, `:timestamp`, `:rndnum`, `:rndstr` utilities.
 
-## Comandos de menu
+## Menu commands
 - `add`, `remove`, `enable`, `disable`, `set`, `get`, `print`, `find`, `export`, `edit`.
-- `print` parâmetros: `as-value`, `where`, `count-only`, `file`, `follow`, `interval`, etc.
-- `import` (raiz): desde 7.16.x suporta `onerror` e `verbose=yes dry-run`.
+- `print` parameters: `as-value`, `where`, `count-only`, `file`, `follow`, `interval`, etc.
+- `import` (root): since 7.16.x supports `onerror` and `verbose=yes dry-run`.
 
-## Estruturas de controle
-- Loops: `:for`, `:foreach`, `:do { ... } while=()` e `:while do={}`.
-- Condicional: `:if (cond) do={...} else={...}`.
+## Control structures
+- Loops: `:for`, `:foreach`, `:do { ... } while=()` and `:while do={}`.
+- Conditional: `:if (cond) do={...} else={...}`.
 
-## Funções
-- Não há funções nativas; use `:global myFunc do={...}` ou `:parse` para definir e invocar; `:return` para retorno.
+## Functions
+- No native functions; use `:global myFunc do={...}` or `:parse` to define and invoke; `:return` for return value.
 
 ## Arrays
-- Chaves não alfanuméricas devem ser entre aspas; `:foreach k,v in={...}` para iterar.
+- Non-alphanumeric keys must be in quotes; `:foreach k,v in={...}` to iterate.
 

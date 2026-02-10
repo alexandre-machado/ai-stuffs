@@ -4,21 +4,21 @@ import sys
 from pathlib import Path
 
 RULES = [
-    (re.compile(r"(^|/)system\s+reset-configuration", re.IGNORECASE), "Comando destrutivo proibido: system reset-configuration"),
-    (re.compile(r"((^|/)tool\s+\w*format)|((^|/)disk\s+format)", re.IGNORECASE), "Comando potencialmente destrutivo: format"),
-    (re.compile(r"(^|/)import\b", re.IGNORECASE), "Evite 'import' dentro do script: execute no menu raiz"),
-    (re.compile(r"(^|/)system\s+script\s+add.*policy=([^\n]*)", re.IGNORECASE), "Política possivelmente excessiva em /system script add"),
-    (re.compile(r"(^|/)ip\s+firewall\s+filter\s+add\b", re.IGNORECASE), "'add' sem guarda idempotente (firewall filter)"),
-    (re.compile(r"(^|/)ip\s+address\s+add\b", re.IGNORECASE), "'add' sem guarda idempotente (ip address)"),
-    (re.compile(r"(^|/)interface\s+list\s+member\s+add\b", re.IGNORECASE), "'add' sem guarda idempotente (interface list member)"),
-    (re.compile(r"\bset\s+\d+\b|\bremove\s+\d+\b"), "Uso de IDs fixos em set/remove; prefira 'find'"),
-    (re.compile(r":delay\b", re.IGNORECASE), "Uso de :delay; evite loops com delay sem limites"),
-    (re.compile(r"\blog\s+(info|warning|error).*\b(password|secret|token)\b", re.IGNORECASE), "Possível exposição de segredo em :log"),
+    (re.compile(r"(^|/)system\s+reset-configuration", re.IGNORECASE), "Destructive command forbidden: system reset-configuration"),
+    (re.compile(r"((^|/)tool\s+\w*format)|((^|/)disk\s+format)", re.IGNORECASE), "Potentially destructive command: format"),
+    (re.compile(r"(^|/)import\b", re.IGNORECASE), "Avoid 'import' inside script: execute at root menu"),
+    (re.compile(r"(^|/)system\s+script\s+add.*policy=([^\n]*)", re.IGNORECASE), "Possibly excessive policy in /system script add"),
+    (re.compile(r"(^|/)ip\s+firewall\s+filter\s+add\b", re.IGNORECASE), "'add' without idempotent guard (firewall filter)"),
+    (re.compile(r"(^|/)ip\s+address\s+add\b", re.IGNORECASE), "'add' without idempotent guard (ip address)"),
+    (re.compile(r"(^|/)interface\s+list\s+member\s+add\b", re.IGNORECASE), "'add' without idempotent guard (interface list member)"),
+    (re.compile(r"\bset\s+\d+\b|\bremove\s+\d+\b"), "Use of fixed IDs in set/remove; prefer 'find'"),
+    (re.compile(r":delay\b", re.IGNORECASE), "Use of :delay; avoid loops with delay without limits"),
+    (re.compile(r"\blog\s+(info|warning|error).*\b(password|secret|token)\b", re.IGNORECASE), "Possible credential exposure in :log"),
 ]
 
 SCOPED_GLOBAL = re.compile(r"\{[^}]*:global\s+", re.IGNORECASE | re.DOTALL)
 
-HEADER = "Lint .rsc – verificação heurística (RouterOS)"
+HEADER = "Lint .rsc – heuristic check (RouterOS)"
 
 
 def lint_text(text: str):
@@ -31,27 +31,27 @@ def lint_text(text: str):
         for rx, msg in RULES:
             if rx.search(l):
                 warnings.append((i, msg, l))
-    # escopo local contendo :global
+    # local scope containing :global
     for m in SCOPED_GLOBAL.finditer(text):
-        # obter número de linha aproximado
+        # get approximate line number
         start = text[:m.start()].count('\n') + 1
-        warnings.append((start, "Uso de :global dentro de escopo local; verifique re-referência externa", "{ ... :global ... }"))
+        warnings.append((start, "Use of :global inside local scope; verify external re-reference", "{ ... :global ... }"))
     return warnings
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Uso: python scripts/lint_rsc.py caminho/do/script.rsc")
+        print("Usage: python scripts/lint_rsc.py path/to/script.rsc")
         sys.exit(2)
     path = Path(sys.argv[1])
     if not path.exists():
-        print(f"Arquivo não encontrado: {path}")
+        print(f"File not found: {path}")
         sys.exit(1)
     text = path.read_text(encoding='utf-8', errors='ignore')
     warnings = lint_text(text)
     print(HEADER)
     if not warnings:
-        print("Nenhum aviso encontrado.")
+        print("No warnings found.")
         return
     for ln, msg, snippet in warnings:
         print(f"L{ln}: {msg}\n    > {snippet}")
