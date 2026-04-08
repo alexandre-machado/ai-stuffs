@@ -74,17 +74,13 @@ check_git() {
 # ─── 1. Headroom ───────────────────────────────────────────────────────────────
 
 install_headroom() {
-  info "Instalando Headroom (compressão de contexto da API ~34–70%)..."
+  info "Instalando/Atualizando Headroom (compressão de contexto da API ~34–70%)..."
 
-  if $PYTHON -c "import headroom" &>/dev/null 2>&1; then
-    success "Headroom já instalado — pulando pip install"
-  else
-    $PYTHON -m pip install --quiet $PIP_EXTRA_FLAGS "headroom-ai[proxy]" || \
-      die "Falha ao instalar headroom-ai. Tente manualmente: pip install 'headroom-ai[proxy]'"
-    success "Headroom instalado"
-  fi
+  $PYTHON -m pip install --upgrade --quiet $PIP_EXTRA_FLAGS "headroom-ai[proxy]" || \
+    die "Falha ao instalar/atualizar headroom-ai. Tente manualmente: pip install --upgrade 'headroom-ai[proxy]'"
+  success "Headroom instalado/atualizado"
 
-  info "Instalando Headroom como servidor MCP no Claude Code..."
+  info "Instalando/Atualizando Headroom como servidor MCP no Claude Code..."
   headroom mcp install 2>/dev/null && success "Headroom MCP instalado" \
     || warn "headroom mcp install falhou — você pode rodar 'headroom proxy --port 8787' manualmente"
 
