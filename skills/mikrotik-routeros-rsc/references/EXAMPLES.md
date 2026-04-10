@@ -35,17 +35,40 @@ https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting
 }
 ```
 
-## Import with dry-run and onerror (≥ 7.16.x)
+## Import with dry-run and error handling (≥ 7.16.x)
 ```
-# locate errors without applying
+# Pass 1: parse-only. Reports every syntax error without touching config.
 import test.rsc verbose=yes dry-run
 
-# error capture
-onerror e in={ import test.rsc } do={ :put "Failure - $e" }
+# Pass 2a: import's own on-error parameter (added in 7.16.x).
+# Catches parse-time failures of the import command itself.
+:do { import test.rsc } on-error={ :put "Failure" }
+
+# Pass 2b: general :onerror with the error message bound to a variable.
+# Works on any command that raises, not just import.
+:onerror e in={ import test.rsc } do={ :put "Failure - $e" }
+```
+
+## Retry with error handling
+```
+# Fetch a remote file with up to 3 retries, logging each failure.
+:local url "https://example.com/config.rsc";
+:local ok false;
+:onerror e in={
+    :retry command={
+        /tool fetch url=$url dst-path="downloaded.rsc"
+        :set ok true
+    } delay=5 max=3
+} do={
+    :log error "fetch failed after retries: $e"
+}
+:if ($ok) do={
+    :do { import downloaded.rsc } on-error={ :log error "import failed" }
+}
 ```
 
 ## Remove by find (avoid fixed IDs)
 ```
-# remove rule by comment
-/ ip firewall filter remove [ find where comment="old-rule" ]
+# remove rule by comment — note the `where` filter; a bare [find] would match EVERY rule.
+/ip firewall filter remove [find where comment="old-rule"]
 ```

@@ -27,9 +27,9 @@ This skill guides the creation, editing, and review of RouterOS (.rsc) scripts w
 
 - Lint: `python scripts/lint_rsc.py path/to/script.rsc`.
 - Safe import (RouterOS ≥ 7.16.x):
-  - `import test.rsc verbose=yes dry-run` to find multiple errors without applying changes.
-  - `do { import test.rsc } on-error={ :put "Failure" }` to capture error.
-  - `onerror e in={ import test.rsc } do={ :put "Failure - $e" }` for detailed message.
+  - `import test.rsc verbose=yes dry-run` reports every syntax error in the file without applying any change.
+  - `:do { import test.rsc } on-error={ :put "Failure" }` — `on-error=` is an import-specific parameter added in 7.16.x. Catches errors from `import` itself (missing file, syntax errors). Errors produced *inside* the imported script are not caught here.
+  - `:onerror e in={ import test.rsc } do={ :put "Failure - $e" }` — `:onerror` is the general error-handling command (any RouterOS version that supports it). The error message is bound to the named variable.
 
 ## References (use as needed)
 

@@ -18,7 +18,7 @@ https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting
 - Arithmetic: `+ - * / %`. Use parentheses to avoid ambiguity with IP.
 - Relational: `< > = <= >= !=`. Negation by `expr=false` or logical `!`.
 - Logical: `! && || and or in`.
-- Bitwise (IP/IPv6): `~ | ^ & << >>` (no shift for IPv6).
+- Bitwise (IP/IPv6): `~ | ^ & << >>`. Docs state these work on both IP and IPv6 data types.
 - Concatenation: `.` for strings, `,` for arrays. Interpolation with `$var`, `$()`, `$[]`.
 - Others: `[]` command substitution, `()` grouping, `$` substitution, `~` POSIX regex.
 
@@ -36,7 +36,7 @@ https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting
 ## Menu commands
 - `add`, `remove`, `enable`, `disable`, `set`, `get`, `print`, `find`, `export`, `edit`.
 - `print` parameters: `as-value`, `where`, `count-only`, `file`, `follow`, `interval`, etc.
-- `import` (root): since 7.16.x supports `onerror` and `verbose=yes dry-run`.
+- `import` (root): since 7.16.x supports `on-error=` parameter and `verbose=yes dry-run`. Wrap with `:onerror` for general error handling (see EXAMPLES.md).
 
 ## Control structures
 - Loops: `:for`, `:foreach`, `:do { ... } while=()` and `:while do={}`.
