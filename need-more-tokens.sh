@@ -399,6 +399,16 @@ install_memstack() {
     warn "Falha na inicialização — rode manualmente: $PYTHON $target/db/memstack-db.py init"
   fi
 
+  # Cria alias `memstack` no rc do shell pra simplificar `memstack init`, `memstack stats`, etc.
+  local shell_rc
+  shell_rc=$(detect_shell_rc)
+  local alias_line="alias memstack='$PYTHON \"$target/db/memstack-db.py\"'"
+  if [[ -n "$shell_rc" ]]; then
+    if append_to_rc_once "$shell_rc" "MemStack alias" "$alias_line"; then
+      grep -qF "$alias_line" "$shell_rc" 2>/dev/null && success "alias 'memstack' configurado em $shell_rc"
+    fi
+  fi
+
   install_semantic_search
 }
 
@@ -453,8 +463,7 @@ print_summary() {
   echo -e "     continua relendo os arquivos do zero a cada sessão."
   echo ""
   echo -e "     Depois de configurar, rode uma vez dentro de cada projeto:"
-  echo -e "     ${YELLOW}cd /caminho/do/projeto${NC}"
-  echo -e "     ${YELLOW}$PYTHON ${MEMSTACK_PATH:-~/.claude/skills}/db/memstack-db.py init${NC}"
+  echo -e "     ${YELLOW}cd /caminho/do/projeto && memstack init${NC}"
   echo ""
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }
