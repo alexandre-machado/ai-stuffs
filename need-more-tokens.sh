@@ -8,6 +8,15 @@ set -euo pipefail
 # ─────────────────────────────────────────────
 #  Claude Code token saver
 #  Headroom + RTK + MemStack
+#
+#  Uso:
+#    ./need-more-tokens.sh              # interativo (default)
+#    ./need-more-tokens.sh -y            # não-interativo (CI, re-run)
+#    ./need-more-tokens.sh --help
+#
+#  Variáveis de ambiente (úteis em modo -y):
+#    MEMSTACK_CHOICE=global|project|/caminho  (default: global)
+#    INSTALL_SEMANTIC=yes|no                  (default: no)
 # ─────────────────────────────────────────────
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
@@ -16,9 +25,44 @@ success() { echo -e "${GREEN}[✓]${NC} $*"; }
 warn()    { echo -e "${YELLOW}[!]${NC} $*"; }
 die()     { echo -e "${RED}[✗]${NC} $*" >&2; exit 1; }
 
-# ─── pré-requisitos ────────────────────────────────────────────────────────────
+# ─── estado compartilhado ──────────────────────────────────────────────────────
 
 PYTHON=""
+PIP_EXTRA_FLAGS=""
+ASSUME_YES=0
+MEMSTACK_CHOICE="${MEMSTACK_CHOICE:-}"
+INSTALL_SEMANTIC="${INSTALL_SEMANTIC:-}"
+
+HEADROOM_OLD=""
+HEADROOM_NEW=""
+RTK_OLD=""
+RTK_NEW=""
+MEMSTACK_PATH=""
+MEMSTACK_REV=""
+
+print_help() {
+  cat <<'EOF'
+Claude Code token saver — Headroom + RTK + MemStack
+
+Uso:
+  ./need-more-tokens.sh [flags]
+
+Flags:
+  -y, --yes      Modo não-interativo. Usa defaults para todos os prompts.
+  -h, --help     Mostra esta ajuda.
+
+Variáveis de ambiente (efetivas com -y):
+  MEMSTACK_CHOICE   global | project | /caminho/customizado  (default: global)
+  INSTALL_SEMANTIC  yes | no                                  (default: no)
+
+Exemplos:
+  ./need-more-tokens.sh
+  ./need-more-tokens.sh -y
+  MEMSTACK_CHOICE=project INSTALL_SEMANTIC=yes ./need-more-tokens.sh -y
+EOF
+}
+
+# ─── pré-requisitos ────────────────────────────────────────────────────────────
 
 check_python() {
   # Prioridade: conda > python3.10/11/12 do sistema
@@ -64,130 +108,298 @@ check_python() {
   die "Python 3.10 ou superior não encontrado. Instale em https://python.org e rode novamente."
 }
 
-PIP_EXTRA_FLAGS=""
-
 check_git() {
   command -v git &>/dev/null || die "git não está instalado."
   success "git $(git --version | awk '{print $3}')"
 }
 
+# Detecta o rc do shell (zsh, bash ou fallback .profile)
+detect_shell_rc() {
+  if [[ "${SHELL:-}" == *"zsh"* ]] && [[ -f "$HOME/.zshrc" || "${SHELL:-}" == *"zsh"* ]]; then
+    echo "$HOME/.zshrc"
+  elif [[ "${SHELL:-}" == *"bash"* ]]; then
+    echo "$HOME/.bashrc"
+  else
+    echo ""
+  fi
+}
+
+# Adiciona uma linha ao shell rc só se ainda não existir (idempotente)
+append_to_rc_once() {
+  local shell_rc="$1" marker="$2" line="$3"
+  [[ -z "$shell_rc" ]] && return 1
+  if grep -qF "$line" "$shell_rc" 2>/dev/null; then
+    return 0  # já está lá
+  fi
+  {
+    echo ""
+    echo "# $marker — adicionado pelo setup do claude-token-saver"
+    echo "$line"
+  } >> "$shell_rc"
+  return 0
+}
+
 # ─── 1. Headroom ───────────────────────────────────────────────────────────────
+
+get_headroom_version() {
+  $PYTHON -m pip show headroom-ai 2>/dev/null | awk '/^Version:/ {print $2}'
+}
 
 install_headroom() {
   info "Instalando/Atualizando Headroom (compressão de contexto da API ~34–70%)..."
 
+  HEADROOM_OLD=$(get_headroom_version)
+
+  # shellcheck disable=SC2086
   $PYTHON -m pip install --upgrade --quiet $PIP_EXTRA_FLAGS "headroom-ai[proxy]" || \
     die "Falha ao instalar/atualizar headroom-ai. Tente manualmente: pip install --upgrade 'headroom-ai[proxy]'"
-  success "Headroom instalado/atualizado"
 
-  info "Instalando/Atualizando Headroom como servidor MCP no Claude Code..."
-  headroom mcp install 2>/dev/null && success "Headroom MCP instalado" \
-    || warn "headroom mcp install falhou — você pode rodar 'headroom proxy --port 8787' manualmente"
+  HEADROOM_NEW=$(get_headroom_version)
 
-  # Persiste a variável de ambiente no shell
-  local shell_rc=""
-  if [[ "$SHELL" == *"zsh"* ]]; then
-    shell_rc="$HOME/.zshrc"
-  elif [[ "$SHELL" == *"bash"* ]]; then
-    shell_rc="$HOME/.bashrc"
+  if [[ -z "$HEADROOM_OLD" ]]; then
+    success "Headroom instalado: $HEADROOM_NEW"
+  elif [[ "$HEADROOM_OLD" == "$HEADROOM_NEW" ]]; then
+    success "Headroom já atualizado ($HEADROOM_NEW)"
+  else
+    success "Headroom: $HEADROOM_OLD → $HEADROOM_NEW"
   fi
 
+  info "Registrando Headroom como servidor MCP no Claude Code..."
+  if headroom mcp install &>/dev/null; then
+    success "Headroom MCP registrado"
+  else
+    warn "headroom mcp install falhou ou já estava registrado — ignorando"
+  fi
+
+  # Persiste ANTHROPIC_BASE_URL no rc (idempotente)
+  local shell_rc
+  shell_rc=$(detect_shell_rc)
+  local export_line='export ANTHROPIC_BASE_URL="http://localhost:8787"'
+
   if [[ -n "$shell_rc" ]]; then
-    local export_line='export ANTHROPIC_BASE_URL="http://localhost:8787"'
-    if ! grep -qF "$export_line" "$shell_rc" 2>/dev/null; then
-      echo "" >> "$shell_rc"
-      echo "# Headroom proxy — adicionado pelo setup do claude-token-saver" >> "$shell_rc"
-      echo "$export_line" >> "$shell_rc"
-      success "ANTHROPIC_BASE_URL adicionado em $shell_rc"
-    else
-      success "ANTHROPIC_BASE_URL já configurado em $shell_rc"
+    if append_to_rc_once "$shell_rc" "Headroom proxy" "$export_line"; then
+      if grep -qF "$export_line" "$shell_rc" 2>/dev/null; then
+        success "ANTHROPIC_BASE_URL configurado em $shell_rc"
+      fi
     fi
   else
     warn "Shell não identificado. Adicione manualmente no seu rc:"
-    warn "  export ANTHROPIC_BASE_URL=\"http://localhost:8787\""
+    warn "  $export_line"
   fi
 }
 
 # ─── 2. RTK ────────────────────────────────────────────────────────────────────
 
-install_rtk() {
-  info "Instalando RTK (compressão de output do terminal 60–90%)..."
-
+get_rtk_version() {
   if command -v rtk &>/dev/null; then
-    success "RTK já instalado — $(rtk --version 2>/dev/null || echo 'versão desconhecida')"
+    rtk --version 2>/dev/null | awk '{print $2}' || echo "instalado"
+  elif [[ -x "$HOME/.local/bin/rtk" ]]; then
+    "$HOME/.local/bin/rtk" --version 2>/dev/null | awk '{print $2}' || echo "instalado"
+  fi
+}
+
+install_rtk() {
+  info "Instalando/Atualizando RTK (compressão de output do terminal 60–90%)..."
+
+  RTK_OLD=$(get_rtk_version)
+
+  local os
+  os="$(uname -s)"
+  if [[ "$os" == "Darwin" ]] && command -v brew &>/dev/null; then
+    # brew upgrade falha se não estiver instalado; fallback pra install
+    if ! brew upgrade rtk --quiet &>/dev/null; then
+      brew install rtk --quiet || die "Falha ao instalar RTK via Homebrew"
+    fi
   else
-    local os
-    os="$(uname -s)"
-    if [[ "$os" == "Darwin" ]] && command -v brew &>/dev/null; then
-      brew install rtk --quiet && success "RTK instalado via Homebrew"
-    else
-      info "Baixando script de instalação do RTK..."
-      curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh \
-        && success "RTK instalado" \
-        || die "Falha na instalação do RTK. Veja: https://github.com/rtk-ai/rtk"
+    info "Rodando instalador oficial do RTK..."
+    curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh \
+      || die "Falha na instalação do RTK. Veja: https://github.com/rtk-ai/rtk"
+  fi
+
+  # Garante que ~/.local/bin está no PATH para este script enxergar rtk
+  if [[ ! "$PATH" == *"$HOME/.local/bin"* ]] && [[ -x "$HOME/.local/bin/rtk" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+  fi
+
+  RTK_NEW=$(get_rtk_version)
+
+  if [[ -z "$RTK_NEW" ]]; then
+    die "RTK foi instalado mas o binário não foi encontrado no PATH nem em ~/.local/bin"
+  fi
+
+  if [[ -z "$RTK_OLD" ]]; then
+    success "RTK instalado: $RTK_NEW"
+  elif [[ "$RTK_OLD" == "$RTK_NEW" ]]; then
+    success "RTK já atualizado ($RTK_NEW)"
+  else
+    success "RTK: $RTK_OLD → $RTK_NEW"
+  fi
+
+  # Garante que o PATH está configurado permanentemente
+  if [[ -x "$HOME/.local/bin/rtk" ]]; then
+    local shell_rc
+    shell_rc=$(detect_shell_rc)
+    local path_line='export PATH="$HOME/.local/bin:$PATH"'
+    if [[ -n "$shell_rc" ]]; then
+      if append_to_rc_once "$shell_rc" "RTK PATH" "$path_line"; then
+        if grep -qF "$path_line" "$shell_rc" 2>/dev/null; then
+          success "~/.local/bin garantido no PATH via $shell_rc"
+        fi
+      fi
     fi
   fi
 
   info "Configurando hooks do RTK no Claude Code..."
-  rtk init -g && success "Hooks do RTK instalados (interceptação automática ativa)" \
-    || warn "rtk init -g falhou — rode manualmente depois de reiniciar o Claude Code"
+  if rtk init -g &>/dev/null; then
+    success "Hooks do RTK instalados (interceptação automática ativa)"
+  else
+    warn "rtk init -g falhou — rode manualmente depois de reiniciar o Claude Code"
+  fi
 }
 
 # ─── 3. MemStack ───────────────────────────────────────────────────────────────
 
-install_memstack() {
-  info "Instalando MemStack (memória persistente entre sessões)..."
+resolve_memstack_target() {
+  # Honra MEMSTACK_CHOICE / ASSUME_YES antes de prompts
+  if [[ -n "$MEMSTACK_CHOICE" ]]; then
+    case "$MEMSTACK_CHOICE" in
+      global)  echo "$HOME/.claude/skills" ;;
+      project) echo "$(pwd)/.claude/skills" ;;
+      /*|~*)   echo "${MEMSTACK_CHOICE/#\~/$HOME}" ;;
+      *)       echo "$HOME/.claude/skills" ;;
+    esac
+    return
+  fi
 
-  local target=""
+  if [[ "$ASSUME_YES" == "1" ]]; then
+    echo "$HOME/.claude/skills"
+    return
+  fi
 
   echo ""
-  echo -e "${CYAN}Onde instalar o MemStack?${NC}"
-  echo "  1) Global (~/.claude/skills) — compartilhado entre todos os projetos"
-  echo "  2) Projeto atual (./.claude/skills)"
-  echo "  3) Caminho customizado"
-  echo ""
+  echo -e "${CYAN}Onde instalar o MemStack?${NC}" >&2
+  echo "  1) Global (~/.claude/skills) — compartilhado entre todos os projetos" >&2
+  echo "  2) Projeto atual (./.claude/skills)" >&2
+  echo "  3) Caminho customizado" >&2
+  echo "" >&2
+  local choice custom_path
   read -rp "Escolha [1]: " choice
   choice="${choice:-1}"
 
   case "$choice" in
-    1) target="$HOME/.claude/skills" ;;
-    2) target="$(pwd)/.claude/skills" ;;
+    1) echo "$HOME/.claude/skills" ;;
+    2) echo "$(pwd)/.claude/skills" ;;
     3)
       read -rp "Caminho: " custom_path
-      target="${custom_path/#\~/$HOME}"
+      echo "${custom_path/#\~/$HOME}"
       ;;
-    *) target="$HOME/.claude/skills" ;;
+    *) echo "$HOME/.claude/skills" ;;
   esac
+}
 
-  if [[ -d "$target/.git" ]]; then
-    info "MemStack já existe em $target — atualizando..."
-    git -C "$target" pull --quiet && success "MemStack atualizado"
-  else
-    mkdir -p "$(dirname "$target")"
-    git clone --quiet https://github.com/cwinvestments/memstack "$target" \
-      && success "MemStack clonado em $target" \
-      || die "Falha ao clonar o MemStack"
+update_memstack_repo() {
+  local target="$1"
+
+  # Pula update se working tree estiver sujo (preserva mudanças do usuário)
+  if ! git -C "$target" diff --quiet 2>/dev/null || ! git -C "$target" diff --cached --quiet 2>/dev/null; then
+    warn "MemStack em $target tem mudanças locais — pulando update para não sobrescrever"
+    warn "Para forçar update: (cd '$target' && git stash && git pull && git stash pop)"
+    MEMSTACK_REV=$(git -C "$target" rev-parse --short HEAD 2>/dev/null || echo "?")
+    return 0
   fi
 
+  local before after
+  before=$(git -C "$target" rev-parse --short HEAD 2>/dev/null || echo "")
+  git -C "$target" fetch --quiet origin 2>/dev/null || {
+    warn "MemStack: fetch falhou (offline?) — mantendo versão atual"
+    MEMSTACK_REV="$before"
+    return 0
+  }
+
+  if git -C "$target" merge --ff-only --quiet FETCH_HEAD 2>/dev/null; then
+    after=$(git -C "$target" rev-parse --short HEAD)
+    if [[ "$before" == "$after" ]]; then
+      success "MemStack já atualizado ($after)"
+    else
+      success "MemStack: $before → $after"
+    fi
+    MEMSTACK_REV="$after"
+  else
+    warn "MemStack: fast-forward falhou (branch divergiu). Update manual necessário."
+    MEMSTACK_REV="$before"
+  fi
+}
+
+install_semantic_search() {
+  # Checa se já está instalado (idempotente)
+  if $PYTHON -c "import lancedb, sentence_transformers" &>/dev/null; then
+    success "Busca semântica já instalada (lancedb + sentence-transformers)"
+    return
+  fi
+
+  # Decide se instala (sem prompt em modo -y)
+  local want=""
+  if [[ -n "$INSTALL_SEMANTIC" ]]; then
+    want="$INSTALL_SEMANTIC"
+  elif [[ "$ASSUME_YES" == "1" ]]; then
+    want="no"
+  else
+    echo ""
+    local sem
+    read -rp "Instalar busca semântica opcional (lancedb + sentence-transformers)? [s/N] " sem
+    case "$(echo "$sem" | tr '[:upper:]' '[:lower:]')" in
+      s|sim|y|yes) want="yes" ;;
+      *) want="no" ;;
+    esac
+  fi
+
+  if [[ "$want" == "yes" ]]; then
+    info "Instalando lancedb + sentence-transformers..."
+    # shellcheck disable=SC2086
+    if $PYTHON -m pip install --quiet $PIP_EXTRA_FLAGS lancedb sentence-transformers; then
+      success "Dependências de busca semântica instaladas"
+    else
+      warn "Falha — instale manualmente: pip install lancedb sentence-transformers"
+    fi
+  else
+    info "Busca semântica pulada (opcional)"
+  fi
+}
+
+install_memstack() {
+  info "Instalando MemStack (memória persistente entre sessões)..."
+
+  local target
+  target=$(resolve_memstack_target)
+  MEMSTACK_PATH="$target"
+
+  if [[ -d "$target/.git" ]]; then
+    info "MemStack já existe em $target — verificando atualizações..."
+    update_memstack_repo "$target"
+  else
+    mkdir -p "$(dirname "$target")"
+    if git clone --quiet https://github.com/cwinvestments/memstack "$target"; then
+      success "MemStack clonado em $target"
+      MEMSTACK_REV=$(git -C "$target" rev-parse --short HEAD 2>/dev/null || echo "?")
+    else
+      die "Falha ao clonar o MemStack"
+    fi
+  fi
+
+  # Cria config.local.json só se não existir (preserva customizações)
   if [[ ! -f "$target/config.local.json" ]] && [[ -f "$target/config.json" ]]; then
     cp "$target/config.json" "$target/config.local.json"
     info "config.local.json criado — edite para adicionar os caminhos dos seus projetos"
   fi
 
   info "Inicializando banco de dados do MemStack..."
-  $PYTHON "$target/db/memstack-db.py" init \
-    && success "Banco de dados do MemStack inicializado" \
-    || warn "Falha na inicialização — rode manualmente: $PYTHON $target/db/memstack-db.py init"
-
-  echo ""
-  read -rp "Instalar busca semântica opcional (lancedb + sentence-transformers)? [s/N] " sem
-  if [[ "$(echo "$sem" | tr '[:upper:]' '[:lower:]')" == "s" ]]; then
-    $PYTHON -m pip install --quiet $PIP_EXTRA_FLAGS lancedb sentence-transformers \
-      && success "Dependências de busca semântica instaladas" \
-      || warn "Falha — instale manualmente: pip install lancedb sentence-transformers"
+  if $PYTHON "$target/db/memstack-db.py" init 2>/dev/null; then
+    success "Banco de dados do MemStack inicializado"
+  else
+    warn "Falha na inicialização — rode manualmente: $PYTHON $target/db/memstack-db.py init"
   fi
 
-  MEMSTACK_PATH="$target"
+  install_semantic_search
 }
 
 # ─── Resumo ────────────────────────────────────────────────────────────────────
@@ -195,8 +407,15 @@ install_memstack() {
 print_summary() {
   echo ""
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo -e "${GREEN} Instalação concluída. O que fazer agora:${NC}"
+  echo -e "${GREEN} Instalação concluída.${NC}"
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+  echo -e "  ${CYAN}Versões instaladas:${NC}"
+  echo -e "     Headroom: ${YELLOW}${HEADROOM_NEW:-?}${NC}"
+  echo -e "     RTK:      ${YELLOW}${RTK_NEW:-?}${NC}"
+  echo -e "     MemStack: ${YELLOW}${MEMSTACK_REV:-?}${NC} em ${MEMSTACK_PATH:-?}"
+  echo ""
+  echo -e "${GREEN} O que fazer agora:${NC}"
   echo ""
   echo -e "  ${CYAN}1. Recarregue o shell${NC}"
   echo -e "     ${YELLOW}source ~/.zshrc${NC}  (ou ~/.bashrc)"
@@ -242,9 +461,24 @@ print_summary() {
 
 # ─── Main ──────────────────────────────────────────────────────────────────────
 
+parse_args() {
+  for arg in "$@"; do
+    case "$arg" in
+      -y|--yes) ASSUME_YES=1 ;;
+      -h|--help) print_help; exit 0 ;;
+      *) die "Flag desconhecida: $arg (use --help)" ;;
+    esac
+  done
+}
+
 main() {
+  parse_args "$@"
+
   echo ""
   echo -e "${CYAN}Claude Code token saver — Headroom + RTK + MemStack${NC}"
+  if [[ "$ASSUME_YES" == "1" ]]; then
+    echo -e "${CYAN}(modo não-interativo)${NC}"
+  fi
   echo ""
 
   check_python
