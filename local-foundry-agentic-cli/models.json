@@ -1,0 +1,68 @@
+{
+    "data": [
+        {
+            "vision": false,
+            "toolCalling": false,
+            "maxInputTokens": 3696,
+            "maxOutputTokens": 528,
+            "id": "DeepSeek-R1-Distill-Qwen-7B-openvino-npu:3",
+            "owned_by": "Microsoft",
+            "permission": [],
+            "created": 1775943375,
+            "CreatedTime": "2026-04-11T21:36:15+00:00",
+            "IsDelta": false,
+            "Successful": true,
+            "HttpStatusCode": 0,
+            "object": "model"
+        },
+        {
+            "vision": false,
+            "toolCalling": false,
+            "maxInputTokens": 3696,
+            "maxOutputTokens": 528,
+            "id": "Mistral-7B-Instruct-v0-2-openvino-npu:2",
+            "owned_by": "Microsoft",
+            "permission": [],
+            "created": 1775942104,
+            "CreatedTime": "2026-04-11T21:15:04+00:00",
+            "IsDelta": false,
+            "Successful": true,
+            "HttpStatusCode": 0,
+            "object": "model"
+        },
+        {
+            "vision": false,
+            "toolCalling": true,
+            "maxInputTokens": 28672,
+            "maxOutputTokens": 4096,
+            "id": "qwen2.5-coder-14b-instruct-cuda-gpu:4",
+            "owned_by": "Microsoft",
+            "permission": [],
+            "created": 1775960947,
+            "CreatedTime": "2026-04-12T02:29:07+00:00",
+            "IsDelta": false,
+            "Successful": true,
+            "HttpStatusCode": 0,
+            "object": "model"
+        },
+        {
+            "vision": false,
+            "toolCalling": true,
+            "maxInputTokens": 3696,
+            "maxOutputTokens": 528,
+            "id": "qwen2.5-coder-7b-instruct-openvino-npu:3",
+            "owned_by": "Microsoft",
+            "permission": [],
+            "created": 1775956833,
+            "CreatedTime": "2026-04-12T01:20:33+00:00",
+            "IsDelta": false,
+            "Successful": true,
+            "HttpStatusCode": 0,
+            "object": "model"
+        }
+    ],
+    "IsDelta": false,
+    "Successful": true,
+    "HttpStatusCode": 0,
+    "object": "list"
+}

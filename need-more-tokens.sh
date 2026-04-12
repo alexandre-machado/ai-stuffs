@@ -276,7 +276,7 @@ resolve_memstack_target() {
     return
   fi
 
-  echo ""
+  echo "" >&2
   echo -e "${CYAN}Onde instalar o MemStack?${NC}" >&2
   echo "  1) Global (~/.claude/skills) — compartilhado entre todos os projetos" >&2
   echo "  2) Projeto atual (./.claude/skills)" >&2

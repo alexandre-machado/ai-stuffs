@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "foundry": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Microsoft Foundry (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:50286/v1",
+        "apiKey": "local-foundry"
+      },
+      "models": {
+        "qwen2.5-coder-14b-instruct-cuda-gpu:4": {
+          "name": "qwen2.5-coder-14b (CUDA)",
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          },
+          "modalities": {
+            "input": ["text"],
+            "output": ["text"]
+          }
+        }
+      }
+    }
+  }
+}
