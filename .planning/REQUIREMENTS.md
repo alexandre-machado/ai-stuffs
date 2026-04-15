@@ -13,6 +13,8 @@
 
 ### Guidance and Visibility
 
+These requirements define the Phase 1 setup contract and are sourced from `docs/best-setup-ever.md`.
+
 - [ ] **DOCS-01**: User can understand the architecture, prerequisites, and commands from the setup guide without reading multiple files.
 - [ ] **DOCS-02**: User can see where RTK, Headroom, MemStack, and monitoring fit in the overall workflow.
 

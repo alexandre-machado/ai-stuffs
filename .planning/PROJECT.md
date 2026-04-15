@@ -46,9 +46,9 @@ The working name for this project is `best-ai-setup-ever`, matching the path the
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Project name: Best AI Setup Ever | Matches the requested path and clearly describes the goal | — Pending |
-| Treat the repo as brownfield | Existing docs and script already establish a meaningful baseline | — Pending |
-| Keep external tools out of scope | The project should orchestrate the setup, not reimplement the tooling | — Pending |
+| Project name: Best AI Setup Ever | Matches the requested path and clearly describes the goal | Confirmed in Phase 1 setup contract |
+| Treat the repo as brownfield | Existing docs and script already establish a meaningful baseline | Confirmed from current repository baseline |
+| Keep external tools out of scope | The project should orchestrate the setup, not reimplement the tooling | Confirmed as a standing scope boundary |
 
 ## Evolution
 
