@@ -345,6 +345,8 @@ install_semantic_search() {
     want="no"
   else
     echo ""
+    info "Sim: instala lancedb + sentence-transformers e habilita busca semântica."
+    info "Não: mantém o setup mais leve e rápido, mas a busca semântica fica indisponível."
     local sem
     read -rp "Instalar busca semântica opcional (lancedb + sentence-transformers)? [s/N] " sem
     case "$(echo "$sem" | tr '[:upper:]' '[:lower:]')" in
@@ -362,7 +364,7 @@ install_semantic_search() {
       warn "Falha — instale manualmente: pip install lancedb sentence-transformers"
     fi
   else
-    info "Busca semântica pulada (opcional)"
+    info "Busca semântica pulada (setup mais leve e sem busca semântica)"
   fi
 }
 
