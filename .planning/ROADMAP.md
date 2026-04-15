@@ -64,6 +64,7 @@ Plans:
 
 ### Phase Notes
 
+- Phase 1 is the setup-contract gate for all downstream script hardening and monitoring work.
 - The project is intentionally local-first and documentation-heavy.
 - External tooling stays out of scope; the roadmap focuses on orchestration, safety, and repeatability.
 - If validation reveals the guide and script are already production-ready, the remaining work becomes documentation polish and verification rather than major feature work.
