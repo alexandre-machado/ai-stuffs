@@ -1,10 +1,15 @@
 # Roadmap: Best AI Setup Ever
 
-## Phase 1 - Define the setup contract
+### Phase 1: Define the setup contract
 
 **Goal:** Turn the existing guide into a clear project definition with a stable scope, named project, and checkable requirements.
 
 **Why this phase exists:** The repo already contains the material, but the project needs an explicit contract before any hardening work is worth doing.
+
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md — Finalize the setup contract and traceability
 
 **Deliverables:**
 - Confirmed project framing in `PROJECT.md`
@@ -18,7 +23,7 @@
 **Depends on:**
 - Codebase map
 
-## Phase 2 - Harden the bootstrap script
+### Phase 2: Harden the bootstrap script
 
 **Goal:** Make `need-more-tokens.sh` a repeatable, safer bootstrap path for a fresh WSL environment.
 
@@ -39,7 +44,7 @@
 **Depends on:**
 - Phase 1
 
-## Phase 3 - Tighten monitoring and operator guidance
+### Phase 3: Tighten monitoring and operator guidance
 
 **Goal:** Make the setup easier to use after install by documenting how to confirm savings, inspect usage, and know when to skip an aggressive optimization.
 
@@ -57,7 +62,7 @@
 **Depends on:**
 - Phase 2
 
-## Phase Notes
+### Phase Notes
 
 - The project is intentionally local-first and documentation-heavy.
 - External tooling stays out of scope; the roadmap focuses on orchestration, safety, and repeatability.
