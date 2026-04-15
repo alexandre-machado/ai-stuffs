@@ -328,6 +328,20 @@ Mantenha o CLAUDE.md **curto** (< 200 linhas). Ele é lido a cada sessão — ca
 
 ---
 
+## Quando pular otimização agressiva (regra prática)
+
+Use as ferramentas de otimização por padrão, mas pule compressão agressiva quando o contexto exigir fidelidade total de saída. Regra simples: se você precisa de saída completa para tomar decisão segura, não comprima nessa etapa.
+
+Situações típicas para pular otimização:
+
+- Comandos que exigem **full output** para diagnóstico confiável (logs longos, diffs extensos, traces completos).
+- Operações com **alto risco de side effects** (deploy, migração, comandos destrutivos, alterações irreversíveis).
+- Troubleshooting em que qualquer perda de detalhe pode esconder a causa raiz.
+
+Depois de concluir a etapa crítica, volte ao fluxo otimizado normalmente para recuperar economia de tokens.
+
+---
+
 ## Hábitos de Sessão (Economia Comportamental)
 
 Essas práticas complementam as ferramentas e podem economizar tanto quanto elas:
