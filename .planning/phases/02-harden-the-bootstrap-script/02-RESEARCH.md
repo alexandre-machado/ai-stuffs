@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-15
 **Phase:** 02-harden-the-bootstrap-script
-**Goal:** Make `need-more-tokens.sh` a repeatable, safer bootstrap path for a fresh WSL environment.
+**Goal:** Make `dont-throw-away-my-tokens/need-more-tokens.sh` a repeatable, safer bootstrap path for a fresh WSL environment.
 
 ## Summary
 
@@ -10,7 +10,7 @@ Phase 2 should keep the current local-first bootstrap model while hardening scri
 
 ## Confirmed Inputs
 
-- Source script: `need-more-tokens.sh`
+- Source script: `dont-throw-away-my-tokens/need-more-tokens.sh`
 - Scope decisions: `02-CONTEXT.md` (D-01 to D-05)
 - Requirement IDs: SETUP-01, SETUP-02, SETUP-03, SAFE-01, SAFE-02
 
@@ -68,7 +68,7 @@ Phase 2 should keep the current local-first bootstrap model while hardening scri
 
 ## Verification Approach For Planning
 
-- `bash -n need-more-tokens.sh` must pass.
+- `bash -n dont-throw-away-my-tokens/need-more-tokens.sh` must pass.
 - `grep` checks should confirm:
   - `~/.profile` fallback handling is present.
   - Semantic-search prompt includes concise consequence language.
