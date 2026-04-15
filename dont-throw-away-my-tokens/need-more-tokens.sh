@@ -115,12 +115,12 @@ check_git() {
 
 # Detecta o rc do shell (zsh, bash ou fallback .profile)
 detect_shell_rc() {
-  if [[ "${SHELL:-}" == *"zsh"* ]] && [[ -f "$HOME/.zshrc" || "${SHELL:-}" == *"zsh"* ]]; then
+  if [[ "${SHELL:-}" == *"zsh"* ]] && [[ -f "$HOME/.zshrc" ]]; then
     echo "$HOME/.zshrc"
-  elif [[ "${SHELL:-}" == *"bash"* ]]; then
+  elif [[ "${SHELL:-}" == *"bash"* ]] && [[ -f "$HOME/.bashrc" ]]; then
     echo "$HOME/.bashrc"
   else
-    echo ""
+    echo "$HOME/.profile"
   fi
 }
 
