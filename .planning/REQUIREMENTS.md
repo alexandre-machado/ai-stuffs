@@ -20,8 +20,8 @@ These requirements define the Phase 1 setup contract and are sourced from `docs/
 
 ### Monitoring
 
-- [ ] **MON-01**: User can check token usage and savings with ccusage or Claude Monitor after setup.
-- [ ] **MON-02**: User can tell when a tool should be skipped or excluded because it needs full output or has high-risk side effects.
+- [x] **MON-01**: User can check token usage and savings with ccusage or Claude Monitor after setup.
+- [x] **MON-02**: User can tell when a tool should be skipped or excluded because it needs full output or has high-risk side effects.
 
 ### Safety
 
@@ -55,8 +55,8 @@ These requirements define the Phase 1 setup contract and are sourced from `docs/
 | SETUP-03 | Phase 2 | Pending |
 | SAFE-01 | Phase 2 | Pending |
 | SAFE-02 | Phase 2 | Pending |
-| MON-01 | Phase 3 | Pending |
-| MON-02 | Phase 3 | Pending |
+| MON-01 | Phase 3 | Complete |
+| MON-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total
