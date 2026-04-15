@@ -64,6 +64,11 @@ Plans:
 - MON-01
 - MON-02
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 03-01-PLAN.md — Refine ccusage-first monitoring and skip-rule guidance
+
 **Depends on:**
 - Phase 2
 
