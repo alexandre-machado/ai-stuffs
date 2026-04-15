@@ -41,6 +41,11 @@ Plans:
 - SAFE-01
 - SAFE-02
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md — Harden script safety, fallback behavior, and docs alignment
+
 **Depends on:**
 - Phase 1
 
