@@ -258,29 +258,31 @@ python3 db/memstack-db.py stats
 
 ---
 
-## Monitoramento — ccusage + Claude Monitor
+## Monitoramento — ccusage primeiro, Claude Monitor como complemento
 
-### ccusage (análise de uso)
+Depois de instalar o setup, comece pelo `ccusage` para confirmar consumo e economia de forma objetiva. Ele deve ser o caminho padrão de monitoramento (MON-01), porque permite verificar histórico diário, mensal e por sessão sem depender de dashboard ativo.
+
+Fluxo recomendado (ccusage-first):
 
 ```bash
-# Rodar sem instalar (recomendado)
-npx ccusage@latest              # Relatório diário
-npx ccusage@latest monthly      # Relatório mensal
-npx ccusage@latest session      # Por sessão
-npx ccusage@latest blocks       # Janelas de 5h (billing)
-npx ccusage@latest blocks --live  # Dashboard em tempo real
-npx ccusage@latest daily --instances  # Agrupado por projeto
+# baseline diário/mensal/sessão
+npx ccusage@latest daily
+npx ccusage@latest monthly
+npx ccusage@latest session
+
+# visão ao vivo quando precisar acompanhar uma janela em andamento
+npx ccusage@latest blocks --live
 ```
 
-### Claude Monitor (tempo real com previsões)
+Quando você já tiver baseline e quiser observar burn rate em tempo real durante uma sessão específica, use Claude Monitor como opção secundária (complementar, não substituta):
 
 ```bash
-# Instalar
+# Instalar (opcional)
 pip install claude-monitor --break-system-packages
 # Ou: uv tool install claude-monitor
 
-# Rodar em terminal separado enquanto usa Claude Code
-cmonitor          # Dashboard ao vivo com burn rate e previsões
+# Monitor em tempo real
+cmonitor
 ```
 
 ---
