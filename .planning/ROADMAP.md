@@ -9,7 +9,7 @@
 **Plans:** 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md — Finalize the setup contract and traceability
+- [x] 01-01-PLAN.md — Finalize the setup contract and traceability
 
 **Deliverables:**
 - Confirmed project framing in `PROJECT.md`

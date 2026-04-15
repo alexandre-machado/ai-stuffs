@@ -15,8 +15,8 @@
 
 These requirements define the Phase 1 setup contract and are sourced from `docs/best-setup-ever.md`.
 
-- [ ] **DOCS-01**: User can understand the architecture, prerequisites, and commands from the setup guide without reading multiple files.
-- [ ] **DOCS-02**: User can see where RTK, Headroom, MemStack, and monitoring fit in the overall workflow.
+- [x] **DOCS-01**: User can understand the architecture, prerequisites, and commands from the setup guide without reading multiple files.
+- [x] **DOCS-02**: User can see where RTK, Headroom, MemStack, and monitoring fit in the overall workflow.
 
 ### Monitoring
 
@@ -48,8 +48,8 @@ These requirements define the Phase 1 setup contract and are sourced from `docs/
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOCS-01 | Phase 1 | Pending |
-| DOCS-02 | Phase 1 | Pending |
+| DOCS-01 | Phase 1 | Complete |
+| DOCS-02 | Phase 1 | Complete |
 | SETUP-01 | Phase 2 | Pending |
 | SETUP-02 | Phase 2 | Pending |
 | SETUP-03 | Phase 2 | Pending |
