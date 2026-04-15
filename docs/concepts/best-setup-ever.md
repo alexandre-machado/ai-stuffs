@@ -66,6 +66,12 @@ source ~/.cargo/env
 
 ---
 
+## Notas para reruns e fallback
+
+- O bootstrap script fica em `dont-throw-away-my-tokens/need-more-tokens.sh`.
+- Se o shell não tiver um rc claro, o script cai em `~/.profile` para manter as mudanças idempotentes.
+- Se o Python do sistema estiver gerenciado, o script avisa e usa `--break-system-packages`; prefira venv ou conda quando quiser isolamento mais rígido.
+
 ## Camada 1 — RTK (Rust Token Killer)
 
 **O que faz:** Proxy CLI que intercepta comandos do shell e retorna output comprimido. Um binário Rust, <10ms de overhead, 100+ comandos suportados.
