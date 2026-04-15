@@ -68,6 +68,7 @@ check_python() {
   # Prioridade: conda > python3.10/11/12 do sistema
   # Se conda está ativo, usa o Python dele (pip funciona sem restrições)
   local candidates=()
+  local found_python_without_pip=0
   if [[ -n "${CONDA_PREFIX:-}" ]]; then
     candidates+=("$CONDA_PREFIX/bin/python3" "$CONDA_PREFIX/bin/python")
   fi
@@ -88,13 +89,17 @@ check_python() {
     fi
   done
 
-  # Fallback: usa o primeiro python 3.10+ disponível mesmo com pip restrito,
+  # Fallback: usa o primeiro python 3.10+ disponível com pip,
   # e passa --break-system-packages nas chamadas de pip
   for cmd in python3.12 python3.11 python3.10 python3; do
     if command -v "$cmd" &>/dev/null; then
       local ver
       ver=$("$cmd" -c "import sys; print(sys.version_info.major * 100 + sys.version_info.minor)" 2>/dev/null) || continue
       if [[ "$ver" -ge 310 ]]; then
+        if ! "$cmd" -m pip --version &>/dev/null 2>&1; then
+          found_python_without_pip=1
+          continue
+        fi
         PYTHON="$cmd"
         PIP_EXTRA_FLAGS="--break-system-packages"
         warn "Usando $($cmd --version) com --break-system-packages (ambiente gerenciado detectado)"
@@ -104,6 +109,10 @@ check_python() {
       fi
     fi
   done
+
+  if [[ "$found_python_without_pip" == "1" ]]; then
+    die "Python 3.10+ encontrado, mas o módulo pip não está disponível. Instale python3-pip (ex.: sudo apt install -y python3-pip) ou ative um ambiente conda/venv."
+  fi
 
   die "Python 3.10 ou superior não encontrado. Instale em https://python.org e rode novamente."
 }
@@ -142,7 +151,8 @@ append_to_rc_once() {
 # ─── 1. Headroom ───────────────────────────────────────────────────────────────
 
 get_headroom_version() {
-  $PYTHON -m pip show headroom-ai 2>/dev/null | awk '/^Version:/ {print $2}'
+  # headroom-ai pode não estar instalado ainda; não tratar ausência como erro fatal
+  $PYTHON -m pip show headroom-ai 2>/dev/null | awk '/^Version:/ {print $2}' || true
 }
 
 install_headroom() {
