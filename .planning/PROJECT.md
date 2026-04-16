@@ -15,7 +15,7 @@ Make the AI coding environment easy to stand up, safe to rerun, and cheaper to u
 ### Validated
 
 - ✓ The repo already contains a consolidated WSL token-optimization guide in `docs/best-setup-ever.md` - existing baseline
-- ✓ The repo already contains a bootstrap script in `need-more-tokens.sh` that stages the setup flow - existing baseline
+- ✓ The repo already contains a bootstrap script in `setup.sh` that stages the setup flow - existing baseline
 - ✓ The repo already contains a RouterOS skill package with references and linting support - existing baseline, but separate from this project
 
 ### Active
@@ -32,7 +32,7 @@ Make the AI coding environment easy to stand up, safe to rerun, and cheaper to u
 
 ## Context
 
-The repo is a small docs and skills bundle. `docs/best-setup-ever.md` describes a three-layer stack: RTK for shell output compression, Headroom for prompt/context compression, and MemStack for cross-session memory, plus monitoring through `ccusage` and `cmonitor`. `need-more-tokens.sh` is the practical bootstrap script, and `opencode.json` points at a local Foundry provider.
+The repo is a small docs and skills bundle. `docs/best-setup-ever.md` describes a three-layer stack: RTK for shell output compression, Headroom for prompt/context compression, and MemStack for cross-session memory, plus monitoring through `ccusage` and `cmonitor`. `setup.sh` is the practical bootstrap script, and `opencode.json` points at a local Foundry provider.
 
 The working name for this project is `best-ai-setup-ever`, matching the path the user requested and the scope of the setup guide.
 

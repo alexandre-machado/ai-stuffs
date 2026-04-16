@@ -15,14 +15,14 @@ The repository is organized as a small knowledge base plus a single practical sk
 
 - `README.md` and `AGENTS.md` act as the repo index.
 - `docs/best-setup-ever.md` is the long-form setup and architecture guide for token-reduction tooling.
-- `need-more-tokens.sh` is the executable bootstrap path for the token-saver workflow.
+- `setup.sh` is the executable bootstrap path for the token-saver workflow.
 - `skills/mikrotik-routeros-rsc/SKILL.md` is the canonical instruction file for the RouterOS skill.
 
 ## Data Flow
 
 - Users install the skill from GitHub or read the docs locally.
 - RouterOS instructions are routed through the skill file and its references.
-- The setup guide feeds shell/bootstrap steps into the `need-more-tokens.sh` script and into manual environment setup.
+- The setup guide feeds shell/bootstrap steps into the `setup.sh` script and into manual environment setup.
 - Validation flows from the skill into `skills/mikrotik-routeros-rsc/scripts/lint_rsc.py` and RouterOS import dry-run procedures.
 
 ## Abstractions

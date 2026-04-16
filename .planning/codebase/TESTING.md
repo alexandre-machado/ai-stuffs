@@ -8,7 +8,7 @@ There is no centralized automated test suite at the repository root. Validation 
 
 - `python skills/mikrotik-routeros-rsc/scripts/lint_rsc.py path/to/script.rsc` for RouterOS syntax and safety checks.
 - RouterOS `import ... dry-run` for syntax validation without applying configuration.
-- Manual execution of `need-more-tokens.sh` in a controlled shell environment.
+- Manual execution of `setup.sh` in a controlled shell environment.
 - Manual review of `docs/best-setup-ever.md` for setup correctness and consistency.
 
 ## What Is Not Present
@@ -25,7 +25,7 @@ There is no centralized automated test suite at the repository root. Validation 
 
 ## Coverage Gaps
 
-- `need-more-tokens.sh` appears to depend on many external network calls and package installers, so it needs careful sandbox testing.
+- `setup.sh` appears to depend on many external network calls and package installers, so it needs careful sandbox testing.
 - The repo would benefit from a repeatable verification script if the setup guide becomes a maintained product instead of a reference note.
 - The current docs do not define an automated acceptance test for the suggested token-saving stack.
 

@@ -22,7 +22,7 @@ See: .planning/PROJECT.md (updated 2026-04-15)
 ## Current State
 
 - The repo already contains the setup guide in `docs/best-setup-ever.md`.
-- The repo already contains the bootstrap script in `need-more-tokens.sh`.
+- The repo already contains the bootstrap script in `setup.sh`.
 - A codebase map has been created under `.planning/codebase/`.
 - The project name is `best-ai-setup-ever`.
 

@@ -10,9 +10,9 @@ set -euo pipefail
 #  Headroom + RTK + MemStack
 #
 #  Uso:
-#    ./need-more-tokens.sh              # interativo (default)
-#    ./need-more-tokens.sh -y            # não-interativo (CI, re-run)
-#    ./need-more-tokens.sh --help
+#    ./setup.sh              # interativo (default)
+#    ./setup.sh -y            # não-interativo (CI, re-run)
+#    ./setup.sh --help
 #
 #  Variáveis de ambiente (úteis em modo -y):
 #    MEMSTACK_CHOICE=global|project|/caminho  (default: global)
@@ -45,7 +45,7 @@ print_help() {
 Claude Code token saver — Headroom + RTK + MemStack
 
 Uso:
-  ./need-more-tokens.sh [flags]
+  ./setup.sh [flags]
 
 Flags:
   -y, --yes      Modo não-interativo. Usa defaults para todos os prompts.
@@ -56,9 +56,9 @@ Variáveis de ambiente (efetivas com -y):
   INSTALL_SEMANTIC  yes | no                                  (default: no)
 
 Exemplos:
-  ./need-more-tokens.sh
-  ./need-more-tokens.sh -y
-  MEMSTACK_CHOICE=project INSTALL_SEMANTIC=yes ./need-more-tokens.sh -y
+  ./setup.sh
+  ./setup.sh -y
+  MEMSTACK_CHOICE=project INSTALL_SEMANTIC=yes ./setup.sh -y
 EOF
 }
 
@@ -260,10 +260,11 @@ install_rtk() {
   fi
 
   info "Configurando hooks do RTK no Claude Code..."
-  if rtk init -g &>/dev/null; then
+  # Usa modo não-interativo para evitar bloqueio em prompts ocultos
+  if rtk init -g --auto-patch </dev/null; then
     success "Hooks do RTK instalados (interceptação automática ativa)"
   else
-    warn "rtk init -g falhou — rode manualmente depois de reiniciar o Claude Code"
+    warn "rtk init -g --auto-patch falhou — rode manualmente: rtk init -g --auto-patch"
   fi
 }
 
@@ -383,9 +384,31 @@ install_memstack() {
 
   local target
   target=$(resolve_memstack_target)
+
+  # Se o destino já existe e não é o repo do MemStack, usa subdiretório dedicado
+  local target_has_memstack_repo=0
+  if [[ -d "$target/.git" ]]; then
+    if git -C "$target" remote get-url origin 2>/dev/null | grep -q 'cwinvestments/memstack'; then
+      target_has_memstack_repo=1
+    fi
+  fi
+
+  if [[ "$target_has_memstack_repo" != "1" ]] && [[ -d "$target" ]] && [[ -n "$(ls -A "$target" 2>/dev/null)" ]]; then
+    local nested_target="$target/memstack"
+
+    if [[ -d "$nested_target/.git" ]] && git -C "$nested_target" remote get-url origin 2>/dev/null | grep -q 'cwinvestments/memstack'; then
+      target="$nested_target"
+    elif [[ -e "$nested_target" ]] && [[ ! -d "$nested_target" ]]; then
+      die "Destino '$nested_target' existe e não é um diretório. Escolha outro caminho para o MemStack."
+    else
+      warn "Destino '$target' já contém arquivos — usando '$nested_target' para o MemStack"
+      target="$nested_target"
+    fi
+  fi
+
   MEMSTACK_PATH="$target"
 
-  if [[ -d "$target/.git" ]]; then
+  if [[ -d "$target/.git" ]] && git -C "$target" remote get-url origin 2>/dev/null | grep -q 'cwinvestments/memstack'; then
     info "MemStack já existe em $target — verificando atualizações..."
     update_memstack_repo "$target"
   else
@@ -414,7 +437,7 @@ install_memstack() {
   # Cria alias `memstack` no rc do shell pra simplificar `memstack init`, `memstack stats`, etc.
   local shell_rc
   shell_rc=$(detect_shell_rc)
-  local alias_line="alias memstack='$PYTHON \"$target/db/memstack-db.py\"'"
+  local alias_line="alias memstack='$PYTHON "$target/db/memstack-db.py"'"
   if [[ -n "$shell_rc" ]]; then
     if append_to_rc_once "$shell_rc" "MemStack alias" "$alias_line"; then
       grep -qF "$alias_line" "$shell_rc" 2>/dev/null && success "alias 'memstack' configurado em $shell_rc"

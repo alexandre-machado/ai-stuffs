@@ -13,7 +13,7 @@ tech-stack:
   patterns: ["Idempotent rc-file writes", "Explicit opt-in prompts with consequence messaging", "Managed Python fallback with warnings"]
 key-files:
   created: [.planning/phases/02-harden-the-bootstrap-script/02-01-SUMMARY.md, .planning/phases/02-harden-the-bootstrap-script/02-VERIFICATION.md]
-  modified: [dont-throw-away-my-tokens/need-more-tokens.sh, docs/concepts/best-setup-ever.md]
+  modified: [dont-throw-away-my-tokens/setup.sh, docs/concepts/best-setup-ever.md]
 key-decisions:
   - "Added ~/.profile fallback when shell-specific rc files are unavailable"
   - "Kept semantic-search dependencies opt-in with concise consequence messaging"
@@ -52,7 +52,7 @@ Each task was committed atomically:
 3. **Task 3: Preserve managed-Python fallback and align docs with hardened behavior** - `1a0d25a` (docs)
 
 ## Files Created/Modified
-- `dont-throw-away-my-tokens/need-more-tokens.sh` - Script hardening for shell rc fallback and prompt clarity.
+- `dont-throw-away-my-tokens/setup.sh` - Script hardening for shell rc fallback and prompt clarity.
 - `docs/concepts/best-setup-ever.md` - Added a concise note about reruns and fallback behavior.
 
 ## Decisions Made
@@ -65,7 +65,7 @@ None - plan executed exactly as written.
 
 ## Issues Encountered
 - The setup guide lives at `docs/concepts/best-setup-ever.md`, not `docs/best-setup-ever.md`.
-- The script had been moved to `dont-throw-away-my-tokens/need-more-tokens.sh` before execution, so plan references were updated to match the current path.
+- The script had been moved to `dont-throw-away-my-tokens/setup.sh` before execution, so plan references were updated to match the current path.
 
 ## User Setup Required
 

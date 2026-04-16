@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Harden `dont-throw-away-my-tokens/need-more-tokens.sh` into a safer, repeatable bootstrap path for fresh WSL/Linux setups, with idempotent shell edits, safer environment detection/ordering, and clearer failure handling. This phase does not add new product capabilities.
+Harden `dont-throw-away-my-tokens/setup.sh` into a safer, repeatable bootstrap path for fresh WSL/Linux setups, with idempotent shell edits, safer environment detection/ordering, and clearer failure handling. This phase does not add new product capabilities.
 
 </domain>
 
@@ -51,7 +51,7 @@ Harden `dont-throw-away-my-tokens/need-more-tokens.sh` into a safer, repeatable 
 - `.planning/PROJECT.md` — Project-level constraints, out-of-scope boundaries, and local-first/idempotence principles.
 
 ### Bootstrap implementation baseline
-- `dont-throw-away-my-tokens/need-more-tokens.sh` — Existing script behavior to harden (prompt flow, Python fallback, shell rc handling, dependency installs).
+- `dont-throw-away-my-tokens/setup.sh` — Existing script behavior to harden (prompt flow, Python fallback, shell rc handling, dependency installs).
 - `docs/concepts/best-setup-ever.md` — Setup guide and architecture context that script behavior should align with.
 
 </canonical_refs>
@@ -60,7 +60,7 @@ Harden `dont-throw-away-my-tokens/need-more-tokens.sh` into a safer, repeatable 
 ## Existing Code Insights
 
 ### Reusable Assets
-- `detect_shell_rc` and `append_to_rc_once` in `dont-throw-away-my-tokens/need-more-tokens.sh` already implement idempotent rc-file mutations and should be reused for Phase 2 hardening.
+- `detect_shell_rc` and `append_to_rc_once` in `dont-throw-away-my-tokens/setup.sh` already implement idempotent rc-file mutations and should be reused for Phase 2 hardening.
 - `check_python`, `install_semantic_search`, and `resolve_memstack_target` functions provide existing extension points for the selected decisions.
 
 ### Established Patterns

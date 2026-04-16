@@ -5,7 +5,7 @@
 - `README.md` - repository overview and install entry point.
 - `AGENTS.md` - master index for the available skill.
 - `docs/` - long-form guidance and setup documentation.
-- `need-more-tokens.sh` - Bash automation script for bootstrapping the token-saver stack.
+- `setup.sh` - Bash automation script for bootstrapping the token-saver stack.
 - `opencode.json` - local OpenCode provider configuration.
 - `basic-npu-chat/` - auxiliary example project folder.
 - `local-foundry-agentic-cli/` - auxiliary example project folder.
@@ -34,7 +34,7 @@
 1. `README.md` or `AGENTS.md` for the repo summary.
 2. `skills/mikrotik-routeros-rsc/SKILL.md` for the actual skill workflow.
 3. `docs/best-setup-ever.md` for the token-optimization architecture.
-4. `need-more-tokens.sh` for the runnable setup path.
+4. `setup.sh` for the runnable setup path.
 
 ## Structural Notes
 

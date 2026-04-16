@@ -20,7 +20,7 @@ This repository integrates with a few external surfaces, but they are mostly ref
 ## Local Configuration Touchpoints
 
 - `opencode.json` points at `http://127.0.0.1:50286/v1` with a local API key placeholder, which implies a local model server or proxy must already exist.
-- `need-more-tokens.sh` writes shell configuration that assumes `~/.bashrc` or `~/.zshrc` is the correct shell startup file.
+- `setup.sh` writes shell configuration that assumes `~/.bashrc` or `~/.zshrc` is the correct shell startup file.
 - The RouterOS skill references a local Python linter script at `skills/mikrotik-routeros-rsc/scripts/lint_rsc.py`.
 
 ## Integration Characteristics

@@ -3,7 +3,7 @@
 ## Source
 
 - `docs/best-setup-ever.md`
-- `need-more-tokens.sh`
+- `setup.sh`
 - `opencode.json`
 
 ## Key Findings

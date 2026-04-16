@@ -19,7 +19,7 @@ The repository uses a documentation-heavy style: short index files at the root, 
 
 ## Shell Conventions
 
-- `need-more-tokens.sh` is written as a defensive Bash script with `set -euo pipefail`.
+- `setup.sh` is written as a defensive Bash script with `set -euo pipefail`.
 - The script prefers idempotent edits to shell rc files and guards commands with existence checks.
 - Environment bootstrap steps are organized as numbered phases for readability.
 

@@ -25,7 +25,7 @@ Plans:
 
 ### Phase 2: Harden the bootstrap script
 
-**Goal:** Make `need-more-tokens.sh` a repeatable, safer bootstrap path for a fresh WSL environment.
+**Goal:** Make `setup.sh` a repeatable, safer bootstrap path for a fresh WSL environment.
 
 **Why this phase exists:** The script is the part most likely to fail in real use because it depends on external installs, rc-file edits, and shell assumptions.
 

@@ -7,7 +7,7 @@ This repository is a documentation and skill bundle, not a compiled application.
 ## Languages and Runtimes
 
 - Markdown for project documentation and skill instructions.
-- Bash for automation in `need-more-tokens.sh` and setup snippets inside docs.
+- Bash for automation in `setup.sh` and setup snippets inside docs.
 - JSON for configuration in `opencode.json` and generated planning files.
 - Python 3 for the RouterOS linter in `skills/mikrotik-routeros-rsc/scripts/lint_rsc.py`.
 
@@ -20,7 +20,7 @@ This repository is a documentation and skill bundle, not a compiled application.
 ## Repository-Level Configuration
 
 - `opencode.json` configures a local OpenCode provider pointing at Microsoft Foundry on `http://127.0.0.1:50286/v1`.
-- `need-more-tokens.sh` assumes an environment with Bash, Python 3.10+, Git, curl, and internet access for package installation.
+- `setup.sh` assumes an environment with Bash, Python 3.10+, Git, curl, and internet access for package installation.
 - The skill content expects RouterOS v7 where possible, with v6 compatibility where practical.
 
 ## External Dependencies

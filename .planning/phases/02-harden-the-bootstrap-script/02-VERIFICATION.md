@@ -11,7 +11,7 @@ gaps: []
 
 ## Goal Check
 
-Goal verified: `need-more-tokens.sh` is safer to rerun in fresh WSL environments and the guide now reflects the fallback behavior.
+Goal verified: `setup.sh` is safer to rerun in fresh WSL environments and the guide now reflects the fallback behavior.
 
 ## Must-Haves
 
@@ -30,11 +30,11 @@ Goal verified: `need-more-tokens.sh` is safer to rerun in fresh WSL environments
 
 ## Automated Checks
 
-- `bash -n dont-throw-away-my-tokens/need-more-tokens.sh` passed.
-- `grep -nE 'detect_shell_rc|\.profile|append_to_rc_once' dont-throw-away-my-tokens/need-more-tokens.sh` passed.
-- `grep -nE 'Instalar busca semântica|lancedb|sentence-transformers|opcional|pulada' dont-throw-away-my-tokens/need-more-tokens.sh` passed.
-- `grep -nE 'break-system-packages|Recomendado: ative um ambiente conda ou venv|check_python|check_git|install_headroom' dont-throw-away-my-tokens/need-more-tokens.sh` passed.
-- `grep -nE 'profile|break-system-packages|fallback|need-more-tokens.sh' docs/concepts/best-setup-ever.md` passed.
+- `bash -n dont-throw-away-my-tokens/setup.sh` passed.
+- `grep -nE 'detect_shell_rc|\.profile|append_to_rc_once' dont-throw-away-my-tokens/setup.sh` passed.
+- `grep -nE 'Instalar busca semântica|lancedb|sentence-transformers|opcional|pulada' dont-throw-away-my-tokens/setup.sh` passed.
+- `grep -nE 'break-system-packages|Recomendado: ative um ambiente conda ou venv|check_python|check_git|install_headroom' dont-throw-away-my-tokens/setup.sh` passed.
+- `grep -nE 'profile|break-system-packages|fallback|setup.sh' docs/concepts/best-setup-ever.md` passed.
 
 ## Result
 

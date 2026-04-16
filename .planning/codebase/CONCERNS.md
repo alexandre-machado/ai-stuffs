@@ -12,7 +12,7 @@ The repository is small and low-risk, but several areas deserve attention: exter
 
 ## Reliability Risks
 
-- `need-more-tokens.sh` performs package installation, downloads remote installers, and writes shell configuration, so it should be treated as a high-privilege script.
+- `setup.sh` performs package installation, downloads remote installers, and writes shell configuration, so it should be treated as a high-privilege script.
 - The setup guide references third-party tools and benefits that may change independently of this repo.
 - `opencode.json` depends on a local service being available at `http://127.0.0.1:50286/v1`; if that service is absent, the config is inert.
 
