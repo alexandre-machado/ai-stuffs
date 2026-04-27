@@ -42,10 +42,19 @@ Primary sources:
 - **Built-in variable name collisions**: RouterOS pre-defines variables like
   `$nothing`, `$true`, `$false`. Re-declaring them with `:local` or `:global`
   shadows the built-in silently and causes hard-to-debug behaviour.
-- **`:global` re-declaration inside functions**: calling `:global varname value`
+- **`:global` re-declaration inside functions**: calling `:global myVar value`
   inside a function body resets the global every time the function runs. If the
-  intent is to *read* an existing global, declare with `:global varname` (no
+  intent is to *read* an existing global, declare with `:global myVar` (no
   value) to bind without overwriting.
+- **`:set` inside nested `do={...}` blocks does NOT modify outer globals by
+  default.** In RouterOS v7, every `do={...}` (including the body of `:if/else`,
+  `:foreach`, `/system script source={...}`) is a closure with its own scope.
+  Even if you declared `:global myVar` at the top of the script, a
+  `:set myVar $x` inside a nested `else={...}` creates a fresh local in that
+  inner scope and the global is never updated — so the next run reads the
+  still-empty global and the comparison fails silently. Re-declare
+  `:global myVar` (no value, just to bind) at the top of every inner
+  `do={...}` block that needs to mutate it.
 
 ## Type coercion
 - RouterOS is weakly typed. Comparing a `str` to a `num` may succeed silently
