@@ -17,6 +17,14 @@ Primary sources:
 - **Scheduler and Netwatch** only accept `read,write,test,reboot` as policies.
   Assigning other policies (e.g. `ftp`, `policy`) to a scheduler `on-event` script
   has no effect — the scheduler cannot escalate beyond its own set.
+- **`/system scheduler` valid properties** (RouterOS v7): `name`, `on-event`,
+  `interval`, `start-date`, `start-time` (accepts `startup` for boot-time
+  execution), `policy`, `comment`, `disabled`. There is **no** `start-delay`,
+  `delay`, `boot-delay`, or `run-after` — importing a scheduler entry with one
+  of those fails with `expected end of command`. To delay the first run after
+  boot, either set `start-time` to an absolute clock time, or make the
+  scheduled script itself resilient to "not yet ready" state (e.g. exit early
+  if DHCP isn't bound) instead of trying to delay the scheduler.
 - **`dont-require-permissions=yes`** lets a script bypass the caller's policy
   restrictions entirely. The official Tips & Tricks page documents this as a
   security risk. Avoid it unless you have an explicit, audited reason.
