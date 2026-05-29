@@ -1,3 +1,6 @@
 /venv
 /output
 /input
+/.env
+__pycache__/
+*.pyc

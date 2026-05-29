@@ -38,7 +38,10 @@ def transcribe(audio_path):
 
     print(f"Detected language '{info.language}' with probability {info.language_probability:.2f}")
 
-    with open("raw.txt", "w", encoding="utf-8") as f:
+    out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, "raw.txt")
+    with open(out_path, "w", encoding="utf-8") as f:
         for segment in segments:
             print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
             f.write(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}\n")

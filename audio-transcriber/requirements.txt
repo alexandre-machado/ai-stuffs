@@ -1,0 +1,14 @@
+# Environment variables
+python-dotenv
+
+# Core transcription
+faster-whisper>=1.0.0
+
+# WhisperX (with diarization)
+whisperx>=3.1.0
+
+# CUDA support (install separately per OS)
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Optional: OpenVINO acceleration
+# openvino

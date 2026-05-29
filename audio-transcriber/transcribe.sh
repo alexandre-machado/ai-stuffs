@@ -8,6 +8,17 @@ fi
 AUDIO_FILE=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Activate venv and run process.py
+# Activate venv and run transcription
 source "$DIR/venv/bin/activate"
-python3 "$DIR/process.py" "$AUDIO_FILE"
+
+# Load .env if exists (simple parser)
+if [ -f "$DIR/.env" ]; then
+    export $(grep -v '^#' "$DIR/.env" | xargs)
+fi
+
+# Try whisperx_transcribe.py first, fall back to process-wisper.py
+if [ -f "$DIR/whisperx_transcribe.py" ]; then
+    python3 "$DIR/whisperx_transcribe.py" "$AUDIO_FILE"
+else
+    python3 "$DIR/process-wisper.py" "$AUDIO_FILE"
+fi
